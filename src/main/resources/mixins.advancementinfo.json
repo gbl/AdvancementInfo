@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "de.guntram.mcmod.advancementinfo.mixin",
+    "refmap": "advancementinfo-refmap.json",
+    "minVersion": "0.6",
+    "client": [
+        "AdvancementScreenMixin", "AdvancementTabMixin", "AdvancementWidgetMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

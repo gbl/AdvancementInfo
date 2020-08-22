@@ -1,0 +1,60 @@
+plugins {
+	id 'fabric-loom' version '0.4-SNAPSHOT'
+}
+
+repositories {
+	maven {
+		url = "https://maven.fabricmc.net/"
+	}
+	maven {
+		url = "https://minecraft.guntram.de/maven/"
+	}
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext.Versions = new Properties()
+Versions.load(file("Versionfiles/mcversion-1.16.properties").newReader())
+
+archivesBaseName = "advancementinfo"
+ext.projectVersion = "1.0"
+
+version = "${Versions['minecraft_version']}-fabric${Versions['fabric_versiononly']}-${project.projectVersion}"
+
+minecraft {
+    refmapName = "advancementinfo-refmap.json";
+}
+
+processResources {
+	inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+		include "fabric.mod.json"
+		expand "version": project.version
+	}
+	from(sourceSets.main.resources.srcDirs) {
+		exclude "fabric.mod.json"
+	}
+}
+
+dependencies {
+    minecraft  "com.mojang:minecraft:${Versions['minecraft_version']}"
+    mappings   "net.fabricmc:yarn:${Versions['yarn_mappings']}:v2"
+    modCompile "net.fabricmc:fabric-loader:${Versions['loader_version']}"
+    modCompile "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
+    modCompile "io.github.prospector:modmenu:${Versions['modmenu_version']}"
+    modCompile "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"
+    include    "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"
+}
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+jar {
+	from "LICENSE"
+}

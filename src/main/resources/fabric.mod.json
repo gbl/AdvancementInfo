@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+    "id": "advancementinfo",
+    "version": "${version}",
+    "environment": "client",
+    "entrypoints": {
+        "client": [ "de.guntram.mcmod.advancementinfo.AdvancementInfo" ]
+    },
+    "custom": {
+        "modupdater": {
+            "strategy": "json",
+            "url": "https://raw.githubusercontent.com/gbl/ModVersionInfo/master/AdvancementInfo.json"
+        }
+    },
+    "mixins": [
+        "mixins.advancementtabtype.json",
+      	"mixins.advancementinfo.json"
+    ],
+    "depends": {
+      "fabric": "*"
+    },
+    "recommends": {
+        "modmenu" : "*",
+        "modupdater": ">=1.1.7"
+    },
+    "name": "AdvancementInfo",
+    "description": "Make it easier to see which advancements you have and what's missing.",
+    "icon": "icon.png",
+    "authors": [ "Giselbaer" ],
+    "contact": {
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/advancementinfo",
+        "sources": "https://github.com/gbl/AdvancementInfo",
+        "issues": "https://github.com/gbl/AdvancementInfo/issues"
+    }
+}
