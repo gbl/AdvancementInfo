@@ -158,7 +158,7 @@ public class AdvancementScreenMixin extends Screen {
                 continue;
             }
             textRenderer.draw(stack, 
-                    textRenderer.trimToWidth(entry.getName(), AdvancementInfo.AI_infoWidth-24),
+                    textRenderer.trimToWidth(entry.getName().getString(), AdvancementInfo.AI_infoWidth-24),
                     width-AI_spaceX-AdvancementInfo.AI_infoWidth+12, y, 
                     entry.getObtained() ? 0x00ff00 : 0xff0000);
             y+=textRenderer.fontHeight;
