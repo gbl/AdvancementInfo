@@ -20,16 +20,16 @@ public class AdvancementInfo implements ClientModInitializer
     static final public int AI_infoWidth = 120;
     
     static public AdvancementWidget mouseOver, mouseClicked;
-    static public List<AdvancementCriterion> cachedClickList;
+    static public List<AdvancementStep> cachedClickList;
 
-    public static List<AdvancementCriterion> getCriteriaList(AdvancementProgressSupplier widget) {
-        List<AdvancementCriterion> result = new ArrayList<>();
-        addCriteria(result, widget.getProgress().getUnobtainedCriteria(), false);
-        addCriteria(result, widget.getProgress().getObtainedCriteria(), true);
+    public static List<AdvancementStep> getSteps(AdvancementProgressSupplier widget) {
+        List<AdvancementStep> result = new ArrayList<>();
+        addStep(result, widget.getProgress().getUnobtainedCriteria(), false);
+        addStep(result, widget.getProgress().getObtainedCriteria(), true);
         return result;        
     }
     
-    private static void addCriteria(List<AdvancementCriterion> result, Iterable<String> criteria, boolean obtained) {
+    private static void addStep(List<AdvancementStep> result, Iterable<String> criteria, boolean obtained) {
         final String[] prefixes = new String[] { "item.minecraft", "block.minecraft", "entity.minecraft", "container", "effect.minecraft", "biome.minecraft" };
         // criteria is actually a List<> .. but play nice
         ArrayList<String> sorted=new ArrayList<>();
@@ -52,7 +52,7 @@ public class AdvancementInfo implements ClientModInitializer
             if (translation == null) {
                 translation = new LiteralText(key);
             }
-            result.add(new AdvancementCriterion(translation, obtained));
+            result.add(new AdvancementStep(translation, obtained));
         }
     }
     

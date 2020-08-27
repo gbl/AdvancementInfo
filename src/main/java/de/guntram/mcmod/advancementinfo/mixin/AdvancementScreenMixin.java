@@ -5,7 +5,7 @@
  */
 package de.guntram.mcmod.advancementinfo.mixin;
 
-import de.guntram.mcmod.advancementinfo.AdvancementCriterion;
+import de.guntram.mcmod.advancementinfo.AdvancementStep;
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceX;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceY;
@@ -124,7 +124,7 @@ public class AdvancementScreenMixin extends Screen {
         AdvancementInfo.mouseClicked = AdvancementInfo.mouseOver;
         scrollPos = 0;
         if (AdvancementInfo.mouseClicked != null) {
-            AdvancementInfo.cachedClickList = AdvancementInfo.getCriteriaList((AdvancementProgressSupplier) AdvancementInfo.mouseClicked);
+            AdvancementInfo.cachedClickList = AdvancementInfo.getSteps((AdvancementProgressSupplier) AdvancementInfo.mouseClicked);
         } else {
             AdvancementInfo.cachedClickList = null;
         }
@@ -145,15 +145,15 @@ public class AdvancementScreenMixin extends Screen {
     private void renderCriteria(MatrixStack stack, AdvancementWidget widget) {
         int y = AI_spaceY + 20;
         int skip;
-        List<AdvancementCriterion> list;
+        List<AdvancementStep> list;
         if (widget == AdvancementInfo.mouseClicked) {
             list = AdvancementInfo.cachedClickList;
             skip = scrollPos;
         } else {
-            list = AdvancementInfo.getCriteriaList((AdvancementProgressSupplier) widget);
+            list = AdvancementInfo.getSteps((AdvancementProgressSupplier) widget);
             skip = 0;
         }
-        for (AdvancementCriterion entry: list) {
+        for (AdvancementStep entry: list) {
             if (skip-- > 0) {
                 continue;
             }

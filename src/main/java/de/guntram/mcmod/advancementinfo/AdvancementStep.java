@@ -11,11 +11,11 @@ import net.minecraft.text.Text;
  *
  * @author gbl
  */
-public class AdvancementCriterion {
+public class AdvancementStep {
     private Text name;
     private boolean obtained;
     
-    AdvancementCriterion(Text name, boolean obtained) {
+    AdvancementStep(Text name, boolean obtained) {
         this.name = name;
         this.obtained = obtained;
     }
