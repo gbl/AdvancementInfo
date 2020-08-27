@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.guntram.mcmod.advancementinfo;
+package de.guntram.mcmod.advancementinfo.accessors;
 
 import net.minecraft.advancement.AdvancementProgress;
 
@@ -11,6 +11,6 @@ import net.minecraft.advancement.AdvancementProgress;
  *
  * @author gbl
  */
-public interface AdvancementProgressSupplier {
+public interface AdvancementWidgetAccessor {
     public AdvancementProgress getProgress();
 }

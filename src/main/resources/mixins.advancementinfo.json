@@ -4,7 +4,8 @@
     "refmap": "advancementinfo-refmap.json",
     "minVersion": "0.6",
     "client": [
-        "AdvancementScreenMixin", "AdvancementTabMixin", "AdvancementWidgetMixin"
+        "AdvancementScreenMixin", "AdvancementTabMixin", "AdvancementWidgetMixin",
+        "AdvancementProgressMixin", "AdvancementDisplayMixin"
     ],
     "injectors": {
         "defaultRequire": 1

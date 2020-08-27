@@ -5,26 +5,33 @@
  */
 package de.guntram.mcmod.advancementinfo;
 
-import net.minecraft.text.Text;
+import java.util.List;
 
-/**
- *
- * @author gbl
- */
 public class AdvancementStep {
-    private Text name;
-    private boolean obtained;
     
-    AdvancementStep(Text name, boolean obtained) {
+    // As we need to run trimToWidth over all entries anyway, which wants 
+    // Strings, not Texts, we can save a few µs by using all Strings here
+    // and not converting to and fro.
+    
+    private String name;
+    private boolean obtained;
+    private List<String> details;
+    
+    AdvancementStep(String name, boolean obtained, List<String> details) {
         this.name = name;
         this.obtained = obtained;
+        this.details = details;
     }
     
     public boolean getObtained() {
         return obtained;
     }
     
-    public Text getName() {
+    public String getName() {
         return name;
-    } 
+    }
+    
+    public List<String> getDetails() {
+        return details;
+    }
 }

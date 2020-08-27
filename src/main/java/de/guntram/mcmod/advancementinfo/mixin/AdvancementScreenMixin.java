@@ -5,13 +5,14 @@
  */
 package de.guntram.mcmod.advancementinfo.mixin;
 
-import de.guntram.mcmod.advancementinfo.AdvancementStep;
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceX;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceY;
-import de.guntram.mcmod.advancementinfo.AdvancementProgressSupplier;
+import de.guntram.mcmod.advancementinfo.AdvancementStep;
 import de.guntram.mcmod.advancementinfo.IteratorReceiver;
+import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import java.util.List;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
@@ -124,10 +125,15 @@ public class AdvancementScreenMixin extends Screen {
         AdvancementInfo.mouseClicked = AdvancementInfo.mouseOver;
         scrollPos = 0;
         if (AdvancementInfo.mouseClicked != null) {
-            AdvancementInfo.cachedClickList = AdvancementInfo.getSteps((AdvancementProgressSupplier) AdvancementInfo.mouseClicked);
+            AdvancementInfo.cachedClickList = AdvancementInfo.getSteps((AdvancementWidgetAccessor) AdvancementInfo.mouseClicked);
         } else {
             AdvancementInfo.cachedClickList = null;
         }
+    }
+    
+    @Inject(method="onRootAdded", at=@At("HEAD"))
+    public void debugRootAdded(Advancement root, CallbackInfo ci) {
+        // System.out.println("root added to screen; display="+root.getDisplay()+", id="+root.getId().toString());
     }
     
     // @Inject(method="mouseScrolled", at=@At("HEAD"), cancellable = true)
@@ -150,7 +156,7 @@ public class AdvancementScreenMixin extends Screen {
             list = AdvancementInfo.cachedClickList;
             skip = scrollPos;
         } else {
-            list = AdvancementInfo.getSteps((AdvancementProgressSupplier) widget);
+            list = AdvancementInfo.getSteps((AdvancementWidgetAccessor) widget);
             skip = 0;
         }
         for (AdvancementStep entry: list) {
@@ -158,12 +164,22 @@ public class AdvancementScreenMixin extends Screen {
                 continue;
             }
             textRenderer.draw(stack, 
-                    textRenderer.trimToWidth(entry.getName().getString(), AdvancementInfo.AI_infoWidth-24),
+                    textRenderer.trimToWidth(entry.getName(), AdvancementInfo.AI_infoWidth-24),
                     width-AI_spaceX-AdvancementInfo.AI_infoWidth+12, y, 
                     entry.getObtained() ? 0x00ff00 : 0xff0000);
             y+=textRenderer.fontHeight;
             if (y > height - AI_spaceY - textRenderer.fontHeight) {
                 break;
+            }
+            
+            if (list.size() == 1 && entry.getDetails() != null) {
+                for (String detail: entry.getDetails()) {
+                    textRenderer.draw(stack, 
+                            textRenderer.trimToWidth(detail, AdvancementInfo.AI_infoWidth-34),
+                            width-AI_spaceX-AdvancementInfo.AI_infoWidth+22, y, 
+                            0x000000);
+                    y+=textRenderer.fontHeight;
+                }
             }
         }
     }

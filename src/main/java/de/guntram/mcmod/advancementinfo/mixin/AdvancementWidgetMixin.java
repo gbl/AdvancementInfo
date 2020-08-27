@@ -6,7 +6,7 @@
 package de.guntram.mcmod.advancementinfo.mixin;
 
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
-import de.guntram.mcmod.advancementinfo.AdvancementProgressSupplier;
+import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 
 @Mixin(AdvancementWidget.class)
-public class AdvancementWidgetMixin implements AdvancementProgressSupplier {
+public class AdvancementWidgetMixin implements AdvancementWidgetAccessor {
     
     @Shadow private AdvancementProgress progress;
     
