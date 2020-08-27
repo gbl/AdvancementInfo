@@ -85,6 +85,6 @@ public class AdvancementInfo implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        showAll = true;
+        showAll = false;
     }
 }
