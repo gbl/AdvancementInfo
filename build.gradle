@@ -18,7 +18,7 @@ ext.Versions = new Properties()
 Versions.load(file("Versionfiles/mcversion-1.16.2.properties").newReader())
 
 archivesBaseName = "advancementinfo"
-ext.projectVersion = "1.1"
+ext.projectVersion = "1.1.1"
 
 version = "${Versions['minecraft_version']}-fabric${Versions['fabric_versiononly']}-${project.projectVersion}"
 

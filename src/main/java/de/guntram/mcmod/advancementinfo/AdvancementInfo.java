@@ -68,12 +68,14 @@ public class AdvancementInfo implements ClientModInitializer
             }
             if (translation == null) {
                 CriterionConditions conditions = ((AdvancementProgressAccessor)(progress)).getCriterion(s).getConditions();
-                JsonObject o = conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
-                JsonObject effects = o.getAsJsonObject("effects");
-                if (effects != null) {
-                    details = new ArrayList<>(effects.entrySet().size());
-                    for (Map.Entry<String, JsonElement> entry: effects.entrySet()) {
-                        details.add(I18n.translate("effect."+entry.getKey().replace(':', '.')));
+                if (conditions != null) {
+                    JsonObject o = conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
+                    JsonObject effects = o.getAsJsonObject("effects");
+                    if (effects != null) {
+                        details = new ArrayList<>(effects.entrySet().size());
+                        for (Map.Entry<String, JsonElement> entry: effects.entrySet()) {
+                            details.add(I18n.translate("effect."+entry.getKey().replace(':', '.')));
+                        }
                     }
                 }
                 translation = key;
