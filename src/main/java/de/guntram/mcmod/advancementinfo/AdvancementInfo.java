@@ -3,15 +3,21 @@ package de.guntram.mcmod.advancementinfo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementProgressAccessor;
+import de.guntram.mcmod.advancementinfo.accessors.AdvancementScreenAccessor;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
+import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
+import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 
@@ -26,6 +32,7 @@ public class AdvancementInfo implements ClientModInitializer
     
     static public AdvancementWidget mouseOver, mouseClicked;
     static public List<AdvancementStep> cachedClickList;
+    static public int cachedClickListLineCount;
     public static boolean showAll;
 
     public static List<AdvancementStep> getSteps(AdvancementWidgetAccessor widget) {
@@ -82,6 +89,46 @@ public class AdvancementInfo implements ClientModInitializer
             }
             result.add(new AdvancementStep(translation, obtained, details));
         }
+    }
+
+    public static void setMatchingFrom(AdvancementsScreen screen, String text) {
+        List<AdvancementStep> result = new ArrayList<>();
+        ClientAdvancementManager advancementHandler = ((AdvancementScreenAccessor)screen).getAdvancementHandler();
+        Collection<Advancement> all = advancementHandler.getManager().getAdvancements();
+        int lineCount = 0;
+        
+        text = text.toLowerCase();
+        for (Advancement adv: all) {
+            System.out.println("handling "+adv.getId().toString());
+            if (adv.getDisplay() == null) {
+                System.out.println("has no display");
+                continue;
+            }
+            if (adv.getDisplay().getTitle() == null) {
+                System.out.println("has no title");
+                continue;
+            }
+            if (adv.getDisplay().getDescription() == null) {
+                System.out.println("has no description");
+                continue;
+            }
+            String title = adv.getDisplay().getTitle().getString();
+            String desc  = adv.getDisplay().getDescription().getString();
+            System.out.println(title+": "+desc);
+            if (title.toLowerCase().contains(text)
+            ||  desc.toLowerCase().contains(text)) {
+                ArrayList<String> details = new ArrayList<>();
+                details.add(desc);
+                AdvancementTab tab = ((AdvancementScreenAccessor)screen).myGetTab(adv);
+                details.add(tab.getTitle().getString());
+                boolean done = ((AdvancementWidgetAccessor)(screen.getAdvancementWidget(adv))).getProgress().isDone();
+                result.add(new AdvancementStep(title, done, details));
+                lineCount+=3;
+            }
+        }
+        cachedClickList = result;
+        cachedClickListLineCount = lineCount;
+        mouseOver = null;
     }
 
     @Override

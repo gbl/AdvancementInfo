@@ -10,15 +10,23 @@ import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceX;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceY;
 import de.guntram.mcmod.advancementinfo.AdvancementStep;
 import de.guntram.mcmod.advancementinfo.IteratorReceiver;
+import de.guntram.mcmod.advancementinfo.accessors.AdvancementScreenAccessor;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import java.util.List;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,11 +39,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @author gbl
  */
 @Mixin(AdvancementsScreen.class)
-public class AdvancementScreenMixin extends Screen {
+public abstract class AdvancementScreenMixin extends Screen implements AdvancementScreenAccessor {
     
     public AdvancementScreenMixin() { super(null); }
     
     private int scrollPos;
+    private TextFieldWidget search;
+    @Shadow @Final private ClientAdvancementManager advancementHandler;
+    @Shadow abstract AdvancementTab getTab(Advancement advancement);
     
     @ModifyConstant(method="render", constant=@Constant(intValue = 252), require=1)
     private int getRenderLeft(int orig) { return width - AI_spaceX*2; }
@@ -63,6 +74,12 @@ public class AdvancementScreenMixin extends Screen {
     @ModifyConstant(method="drawWidgets", constant=@Constant(intValue = 140), require=1)
     private int getWidgetsTop(int orig) // { return height - AI_spaceY*2; }
     { return 70; }
+    
+    @Inject(method="init", at=@At("RETURN"))
+    private void initSeachField(CallbackInfo ci) {
+        this.search = new TextFieldWidget(textRenderer, width-AI_spaceX-AdvancementInfo.AI_infoWidth+10, AI_spaceY+20, AdvancementInfo.AI_infoWidth-20, 18, new LiteralText(""));
+    }
+
     
     @Inject(method="render",
             at=@At(value="INVOKE",
@@ -112,22 +129,33 @@ public class AdvancementScreenMixin extends Screen {
     @Inject(method="drawWidgets", at=@At("RETURN"))
     public void renderRightFrameTitle(MatrixStack stack, int x, int y, CallbackInfo ci) {
         textRenderer.draw(stack, I18n.translate("advancementinfo.infopane"), width-AI_spaceX-AdvancementInfo.AI_infoWidth+8, y+6, 4210752);
+        search.renderButton(stack, x, y, 0);
 
         if (AdvancementInfo.mouseClicked != null) {
             renderCriteria(stack, AdvancementInfo.mouseClicked);
-        } else if (AdvancementInfo.mouseOver != null) {
+        } else if (AdvancementInfo.mouseOver != null || AdvancementInfo.cachedClickList != null) {
             renderCriteria(stack, AdvancementInfo.mouseOver);                    
         }
     }
     
-    @Inject(method="mouseClicked", at=@At("HEAD"))
+    @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
     public void rememberClickedWidget(double x, double y, int button, CallbackInfoReturnable cir) {
+        if (search.mouseClicked(x, y, button)) {
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
+        if (x >= width - AI_spaceX - AdvancementInfo.AI_infoWidth) {
+            // later: handle click on search results here
+            return;
+        }
         AdvancementInfo.mouseClicked = AdvancementInfo.mouseOver;
         scrollPos = 0;
         if (AdvancementInfo.mouseClicked != null) {
             AdvancementInfo.cachedClickList = AdvancementInfo.getSteps((AdvancementWidgetAccessor) AdvancementInfo.mouseClicked);
+            AdvancementInfo.cachedClickListLineCount = AdvancementInfo.cachedClickList.size();
         } else {
             AdvancementInfo.cachedClickList = null;
+            AdvancementInfo.cachedClickListLineCount = 0;
         }
     }
     
@@ -142,14 +170,39 @@ public class AdvancementScreenMixin extends Screen {
         if (amount > 0 && scrollPos > 0) {
             scrollPos--;
         } else if (amount < 0 && AdvancementInfo.cachedClickList != null 
-                && scrollPos < AdvancementInfo.cachedClickList.size() - (height-2*AI_spaceY)/textRenderer.fontHeight + 5) {
+                && scrollPos < AdvancementInfo.cachedClickListLineCount - ((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1)) {
             scrollPos++;
+        }
+        System.out.println("scrollpos is now "+scrollPos+", needed lines "+AdvancementInfo.cachedClickListLineCount+", shown "+((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1));
+        return false;
+    }
+
+    @Inject(method="keyPressed", at=@At("HEAD"), cancellable = true)
+    public void redirectKeysToSearch(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable cir) {
+        if (search.isActive()) {
+            if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                System.out.println("now");
+                AdvancementInfo.setMatchingFrom((AdvancementsScreen)(Object)this, search.getText());
+                cir.setReturnValue(true);
+                cir.cancel();
+            }
+            if (search.keyPressed(keyCode, scanCode, modifiers)) {
+                cir.setReturnValue(true);
+                cir.cancel();
+            }
+        }
+    }
+    
+    @Override
+    public boolean charTyped(char chr, int keyCode) {
+        if (search.isActive()) {
+            return search.charTyped(chr, keyCode);
         }
         return false;
     }
-    
+
     private void renderCriteria(MatrixStack stack, AdvancementWidget widget) {
-        int y = AI_spaceY + 20;
+        int y = AI_spaceY + 20 + 25;
         int skip;
         List<AdvancementStep> list;
         if (widget == AdvancementInfo.mouseClicked) {
@@ -159,28 +212,44 @@ public class AdvancementScreenMixin extends Screen {
             list = AdvancementInfo.getSteps((AdvancementWidgetAccessor) widget);
             skip = 0;
         }
+        if (list == null) {
+            return;
+        }
         for (AdvancementStep entry: list) {
-            if (skip-- > 0) {
-                continue;
-            }
-            textRenderer.draw(stack, 
-                    textRenderer.trimToWidth(entry.getName(), AdvancementInfo.AI_infoWidth-24),
-                    width-AI_spaceX-AdvancementInfo.AI_infoWidth+12, y, 
-                    entry.getObtained() ? 0x00ff00 : 0xff0000);
-            y+=textRenderer.fontHeight;
-            if (y > height - AI_spaceY - textRenderer.fontHeight) {
-                break;
+            if (skip-- <= 0) {
+                textRenderer.draw(stack, 
+                        textRenderer.trimToWidth(entry.getName(), AdvancementInfo.AI_infoWidth-24),
+                        width-AI_spaceX-AdvancementInfo.AI_infoWidth+12, y, 
+                        entry.getObtained() ? 0x00ff00 : 0xff0000);
+                y+=textRenderer.fontHeight;
+                if (y > height - AI_spaceY - textRenderer.fontHeight*2) {
+                    return;
+                }
             }
             
-            if (list.size() == 1 && entry.getDetails() != null) {
+            if (entry.getDetails() != null) {
                 for (String detail: entry.getDetails()) {
-                    textRenderer.draw(stack, 
-                            textRenderer.trimToWidth(detail, AdvancementInfo.AI_infoWidth-34),
-                            width-AI_spaceX-AdvancementInfo.AI_infoWidth+22, y, 
-                            0x000000);
-                    y+=textRenderer.fontHeight;
+                    if (skip-- <= 0) {
+                        textRenderer.draw(stack, 
+                                textRenderer.trimToWidth(detail, AdvancementInfo.AI_infoWidth-34),
+                                width-AI_spaceX-AdvancementInfo.AI_infoWidth+22, y, 
+                                0x000000);
+                        y+=textRenderer.fontHeight;
+                        if (y > height - AI_spaceY - textRenderer.fontHeight*2) {
+                            return;
+                        }
+                    }
                 }
             }
         }
+    }
+    
+    @Override
+    public ClientAdvancementManager getAdvancementHandler() {
+        return advancementHandler;
+    }
+    
+    public AdvancementTab myGetTab(Advancement advancement) {
+        return getTab(advancement);
     }
 }
