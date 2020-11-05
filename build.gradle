@@ -15,7 +15,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-1.16.2.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-1.16.4.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2"
@@ -44,8 +44,6 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${Versions['loader_version']}"
     modCompile "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
     modCompile "io.github.prospector:modmenu:${Versions['modmenu_version']}"
-    modCompile "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"
-    include    "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"
 }
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
