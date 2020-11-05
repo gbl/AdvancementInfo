@@ -181,12 +181,12 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     public void redirectKeysToSearch(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable cir) {
         if (search.isActive()) {
             if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                System.out.println("now");
                 AdvancementInfo.setMatchingFrom((AdvancementsScreen)(Object)this, search.getText());
-                cir.setReturnValue(true);
-                cir.cancel();
             }
-            if (search.keyPressed(keyCode, scanCode, modifiers)) {
+            search.keyPressed(keyCode, scanCode, modifiers);
+            // Only let ESCAPE end the screen, we don't want the keybind ('L')
+            // to terminate the screen when we're typing text
+            if (keyCode != GLFW.GLFW_KEY_ESCAPE) {
                 cir.setReturnValue(true);
                 cir.cancel();
             }
