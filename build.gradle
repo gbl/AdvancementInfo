@@ -1,5 +1,6 @@
 plugins {
 	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id "com.modrinth.minotaur" version "1.1.0"
 }
 
 repositories {
@@ -55,4 +56,18 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
 	from "LICENSE"
+}
+
+import com.modrinth.minotaur.TaskModrinthUpload
+
+task publishModrinth (type: TaskModrinthUpload){
+
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = 'G1epq3jN'
+    versionNumber = project.version
+    versionName = project.archivesBaseName
+    releaseType = 'release'
+    uploadFile = remapJar // This is the java jar task
+    addGameVersion("${Versions['minecraft_version']}")
+    addLoader('fabric')
 }
