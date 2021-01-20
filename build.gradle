@@ -16,7 +16,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-20w51a.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-21w03a.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2"
