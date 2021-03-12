@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id 'fabric-loom' version '0.6-SNAPSHOT'
 	id "com.modrinth.minotaur" version "1.1.0"
 }
 
@@ -10,13 +10,16 @@ repositories {
 	maven {
 		url = "https://minecraft.guntram.de/maven/"
 	}
+        maven {
+                url = "https://maven.terraformersmc.com/releases/"
+        }
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-21w08b.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-21w10a.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2"
@@ -42,9 +45,9 @@ processResources {
 dependencies {
     minecraft  "com.mojang:minecraft:${Versions['minecraft_version']}"
     mappings   "net.fabricmc:yarn:${Versions['yarn_mappings']}:v2"
-    modCompile "net.fabricmc:fabric-loader:${Versions['loader_version']}"
-    modCompile "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
-    modCompile "io.github.prospector:modmenu:${Versions['modmenu_version']}"
+    modImplementation "net.fabricmc:fabric-loader:${Versions['loader_version']}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
+    modImplementation "com.terraformersmc:modmenu:${Versions['modmenu_version']}"
 }
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
