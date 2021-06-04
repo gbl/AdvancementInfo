@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.6-SNAPSHOT'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id "com.modrinth.minotaur" version "1.1.0"
 }
 
@@ -15,11 +15,11 @@ repositories {
         }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 16
+targetCompatibility = 16
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-21w13a.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-1.17-pre5.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2"
@@ -31,15 +31,11 @@ minecraft {
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-	}
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
 }
 
 dependencies {
