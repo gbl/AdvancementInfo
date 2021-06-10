@@ -77,8 +77,9 @@ public class AdvancementInfo implements ClientModInitializer
                 CriterionConditions conditions = ((AdvancementProgressAccessor)(progress)).getCriterion(s).getConditions();
                 if (conditions != null) {
                     JsonObject o = conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
-                    JsonObject effects = o.getAsJsonObject("effects");
-                    if (effects != null) {
+                    JsonElement maybeEffects = o.get("effects");
+                    if (maybeEffects != null && maybeEffects instanceof JsonObject) {
+                        JsonObject effects = (JsonObject) maybeEffects;
                         details = new ArrayList<>(effects.entrySet().size());
                         for (Map.Entry<String, JsonElement> entry: effects.entrySet()) {
                             details.add(I18n.translate("effect."+entry.getKey().replace(':', '.')));

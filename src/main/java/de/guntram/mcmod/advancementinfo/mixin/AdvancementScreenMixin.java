@@ -173,7 +173,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
                 && scrollPos < AdvancementInfo.cachedClickListLineCount - ((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1)) {
             scrollPos++;
         }
-        System.out.println("scrollpos is now "+scrollPos+", needed lines "+AdvancementInfo.cachedClickListLineCount+", shown "+((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1));
+        // System.out.println("scrollpos is now "+scrollPos+", needed lines "+AdvancementInfo.cachedClickListLineCount+", shown "+((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1));
         return false;
     }
 
