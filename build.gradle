@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id "com.modrinth.minotaur" version "1.1.0"
 	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
@@ -20,14 +20,14 @@ sourceCompatibility = 16
 targetCompatibility = 16
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-21w37a.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-21w39a.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2.1"
 
 version = "${Versions['minecraft_version']}-fabric${Versions['fabric_versiononly']}-${project.projectVersion}"
 
-minecraft {
+loom {
     refmapName = "advancementinfo-refmap.json";
 }
 
