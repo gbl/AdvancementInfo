@@ -67,11 +67,11 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     private int getAdvTreeYSize(int orig) { return height - AI_spaceY*2 - 3*9; }
 
     /* Make it so that drawWidgets only draws the left top corner ... */
-    @ModifyConstant(method="drawWidgets", constant=@Constant(intValue = 252), require=1)
+    @ModifyConstant(method="drawWindow", constant=@Constant(intValue = 252), require=1)
     private int getWidgetsLeft(int orig) // { return width - AI_spaceX*2; }
     { return 126; }
     
-    @ModifyConstant(method="drawWidgets", constant=@Constant(intValue = 140), require=1)
+    @ModifyConstant(method="drawWindow", constant=@Constant(intValue = 140), require=1)
     private int getWidgetsTop(int orig) // { return height - AI_spaceY*2; }
     { return 70; }
     
@@ -83,14 +83,14 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     
     @Inject(method="render",
             at=@At(value="INVOKE",
-                    target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawWidgets(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
+                    target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawWindow(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void renderRightFrameBackground(MatrixStack stack, int x, int y, float delta, CallbackInfo ci) {
         fill(stack, 
                 width-AI_spaceX-AdvancementInfo.AI_infoWidth+4, AI_spaceY+4, 
                 width-AI_spaceX-4, height-AI_spaceY-4, 0xffc0c0c0);
     }
     
-    @Inject(method="drawWidgets",
+    @Inject(method="drawWindow",
             at=@At(value="INVOKE", 
                     target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
     public void renderFrames(MatrixStack stack, int x, int y, CallbackInfo ci)
@@ -126,7 +126,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         }
     }
     
-    @Inject(method="drawWidgets", at=@At("RETURN"))
+    @Inject(method="drawWindow", at=@At("RETURN"))
     public void renderRightFrameTitle(MatrixStack stack, int x, int y, CallbackInfo ci) {
         textRenderer.draw(stack, I18n.translate("advancementinfo.infopane"), width-AI_spaceX-AdvancementInfo.AI_infoWidth+8, y+6, 4210752);
         search.renderButton(stack, x, y, 0);
