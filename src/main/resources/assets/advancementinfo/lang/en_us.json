@@ -1,3 +1,12 @@
 {
-    "advancementinfo.infopane": "Info"
+    "advancementinfo.infopane": "Info",
+    "text.autoconfig.advancementinfo.title": "AdvancementInfo Settings",
+    "text.autoconfig.advancementinfo.option.colorHave": "Finished Requirement Color",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Unfinished Requirement Color",
+    "text.autoconfig.advancementinfo.option.marginX": "Margin X",
+    "text.autoconfig.advancementinfo.option.marginY": "Margin Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Info Width",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Min",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Max",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Percent"
 }

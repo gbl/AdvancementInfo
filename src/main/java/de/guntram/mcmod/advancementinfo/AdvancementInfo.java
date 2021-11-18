@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
@@ -25,15 +28,12 @@ public class AdvancementInfo implements ClientModInitializer
 {
     static final String MODID="advancementinfo";
     static final String VERSION="@VERSION@";
-    
-    static final public int AI_spaceX = 30;
-    static final public int AI_spaceY = 30;
-    static final public int AI_infoWidth = 120;
-    
+
     static public AdvancementWidget mouseOver, mouseClicked;
-    static public List<AdvancementStep> cachedClickList;
+    static public List<AdvancementStep>cachedClickList;
     static public int cachedClickListLineCount;
     public static boolean showAll;
+    public static ModConfig config;
 
     public static List<AdvancementStep> getSteps(AdvancementWidgetAccessor widget) {
         List<AdvancementStep> result = new ArrayList<>();
@@ -135,6 +135,8 @@ public class AdvancementInfo implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        showAll = false;
+        showAll = true;
+        AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
     }
 }

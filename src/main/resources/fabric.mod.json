@@ -4,7 +4,8 @@
     "version": "${version}",
     "environment": "client",
     "entrypoints": {
-        "client": [ "de.guntram.mcmod.advancementinfo.AdvancementInfo" ]
+        "client": [ "de.guntram.mcmod.advancementinfo.AdvancementInfo" ],
+        "modmenu": [ "de.guntram.mcmod.advancementinfo.ModMenuIntegration" ]
     },
     "custom": {
         "modupdater": {
@@ -13,14 +14,14 @@
         }
     },
     "mixins": [
-        "mixins.advancementtabtype.json",
       	"mixins.advancementinfo.json"
     ],
     "depends": {
       "fabric": "*"
     },
     "recommends": {
-        "modmenu" : "*",
+        "modmenu" : ">=2.0.0",
+        "cloth-config2": ">=5.0.0",
         "modupdater": ">=1.1.7"
     },
     "name": "AdvancementInfo",
