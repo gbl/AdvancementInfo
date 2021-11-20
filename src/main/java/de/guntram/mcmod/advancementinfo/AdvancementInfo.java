@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.advancement.Advancement;
@@ -23,6 +24,7 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.util.ActionResult;
 
 public class AdvancementInfo implements ClientModInitializer
 {
@@ -136,7 +138,11 @@ public class AdvancementInfo implements ClientModInitializer
     public void onInitializeClient()
     {
         showAll = true;
-        AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        ConfigHolder<ModConfig> configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        configHolder.registerSaveListener((holder, modConfig) -> {
+            modConfig.validate();
+            return ActionResult.PASS;
+        });
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
     }
 }

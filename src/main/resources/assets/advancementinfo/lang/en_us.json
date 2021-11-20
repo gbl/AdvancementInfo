@@ -8,5 +8,6 @@
     "text.autoconfig.advancementinfo.option.infoWidth": "Info Width",
     "text.autoconfig.advancementinfo.option.infoWidth.min": "Min",
     "text.autoconfig.advancementinfo.option.infoWidth.max": "Max",
-    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Percent"
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Percent",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Enabled"
 }

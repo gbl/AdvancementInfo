@@ -18,23 +18,35 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     public InfoWidth infoWidth = new InfoWidth();
 
+    @Override
+    public void validatePostLoad() throws ValidationException {
+        ConfigData.super.validatePostLoad();
+        this.validate();
+    }
+
+    public void validate() {
+        infoWidth.min = Math.max(100, infoWidth.min);
+        if (infoWidth.min > infoWidth.max) {
+            infoWidth.max = infoWidth.min;
+        }
+    }
+
     public static class InfoWidth {
-        int min = 120;
-        int max = 300;
+        public int min = 120;
+        public int max = 300;
         @ConfigEntry.BoundedDiscrete(min = 0, max = 50)
-        int percent = 30;
+        public int percent = 30;
 
         private int clamp(int totalWidth) {
-            int wantWidth = (int) (totalWidth*percent/100f);
+            int wantWidth = (int) (totalWidth * percent / 100f);
             return Math.max(Math.min(wantWidth, max), min);
         }
 
         public int calculate(int screenWidth) {
-            if(min > max) max = min;
-            if(percent == 0 || max == 0) {
+            if (percent == 0 || max == 0) {
                 return 0;
             }
-            return clamp(screenWidth - config.marginX*2);
+            return clamp(screenWidth - config.marginX * 2);
         }
     }
 }
