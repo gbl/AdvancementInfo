@@ -15,6 +15,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.criterion.CriterionConditions;
@@ -107,21 +108,24 @@ public class AdvancementInfo implements ClientModInitializer
         
         text = text.toLowerCase();
         for (Advancement adv: all) {
+            if(adv.getId().getPath().startsWith("recipes/")) {
+                continue;
+            }
             if (adv.getDisplay() == null) {
-                LOGGER.debug(" ! {} has no display", adv.getId());
+                LOGGER.debug("! {} Has no display", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getTitle() == null) {
-                LOGGER.debug(" ! {} has no title", adv.getId());
+                LOGGER.debug("! {} Has no title", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getDescription() == null) {
-                LOGGER.debug(" ! {} has no description", adv.getId());
+                LOGGER.debug("! {} Has no description", adv.getId());
                 continue;
             }
             String title = adv.getDisplay().getTitle().getString();
             String desc  = adv.getDisplay().getDescription().getString();
-            LOGGER.debug(" - {} {}: {} ", title, desc, adv.getId());
+            LOGGER.debug("- {} {}: {} ", adv.getId(), title, desc);
             if (title.toLowerCase().contains(text)
             ||  desc.toLowerCase().contains(text)) {
                 ArrayList<String> details = new ArrayList<>();
@@ -139,16 +143,20 @@ public class AdvancementInfo implements ClientModInitializer
     }
 
     @Override
-    public void onInitializeClient()
-    {
+    public void onInitializeClient() {
         Configurator.setLevel(LOGGER.getName(), Level.ALL);
-        showAll = true;
-        ConfigHolder<ModConfig> configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
-        configHolder.registerSaveListener((holder, modConfig) -> {
-            modConfig.validate();
-            return ActionResult.PASS;
-        });
-        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        showAll = false;
+        if (FabricLoader.getInstance().isModLoaded("cloth-config2")) {
+            ConfigHolder<ModConfig> configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+            configHolder.registerSaveListener((holder, modConfig) -> {
+                modConfig.validate();
+                return ActionResult.PASS;
+            });
+            config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        } else {
+            config = new ModConfig();
+        }
+
         LOGGER.info("AdvancementInfo initialized");
     }
 }

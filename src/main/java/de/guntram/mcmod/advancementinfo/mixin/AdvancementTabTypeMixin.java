@@ -20,9 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @author gbl
  */
 
+@SuppressWarnings("public-target")
 @Mixin(targets = "net.minecraft.client.gui.screen.advancement.AdvancementTabType")
 public class AdvancementTabTypeMixin {
-
     @Dynamic
     @Inject(method="getTabX", at=@At("HEAD"), cancellable = true)
     public void getAdjustedTabX(int index, CallbackInfoReturnable<Integer> cir) {

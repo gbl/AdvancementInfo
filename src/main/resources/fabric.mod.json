@@ -14,14 +14,14 @@
         }
     },
     "mixins": [
-      	"mixins.advancementinfo.json"
+        "mixins.advancementinfo.json"
     ],
     "depends": {
-      "fabric": "*"
+        "fabric": "*",
+        "cloth-config2": ">=5.0.0"
     },
     "recommends": {
         "modmenu" : ">=2.0.0",
-        "cloth-config2": ">=5.0.0",
         "modupdater": ">=1.1.7"
     },
     "name": "AdvancementInfo",
