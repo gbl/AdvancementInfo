@@ -25,11 +25,16 @@ import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.ActionResult;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class AdvancementInfo implements ClientModInitializer
 {
-    static final String MODID="advancementinfo";
-    static final String VERSION="@VERSION@";
+    static final String MODID = "advancementinfo";
+    static final String VERSION = "@VERSION@";
+    static final Logger LOGGER = LogManager.getLogger();
 
     static public AdvancementWidget mouseOver, mouseClicked;
     static public List<AdvancementStep>cachedClickList;
@@ -47,7 +52,7 @@ public class AdvancementInfo implements ClientModInitializer
     private static void addStep(List<AdvancementStep> result, AdvancementProgress progress, Iterable<String> criteria, boolean obtained) {
         final String[] prefixes = new String[] { "item.minecraft", "block.minecraft", "entity.minecraft", "container", "effect.minecraft", "biome.minecraft" };
         // criteria is actually a List<> .. but play nice
-        ArrayList<String> sorted=new ArrayList<>();
+        ArrayList<String> sorted = new ArrayList<>();
         for (String s:criteria) {
             sorted.add(s);
         }
@@ -102,22 +107,21 @@ public class AdvancementInfo implements ClientModInitializer
         
         text = text.toLowerCase();
         for (Advancement adv: all) {
-            System.out.println("handling "+adv.getId().toString());
             if (adv.getDisplay() == null) {
-                System.out.println("has no display");
+                LOGGER.debug(" ! {} has no display", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getTitle() == null) {
-                System.out.println("has no title");
+                LOGGER.debug(" ! {} has no title", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getDescription() == null) {
-                System.out.println("has no description");
+                LOGGER.debug(" ! {} has no description", adv.getId());
                 continue;
             }
             String title = adv.getDisplay().getTitle().getString();
             String desc  = adv.getDisplay().getDescription().getString();
-            System.out.println(title+": "+desc);
+            LOGGER.debug(" - {} {}: {} ", title, desc, adv.getId());
             if (title.toLowerCase().contains(text)
             ||  desc.toLowerCase().contains(text)) {
                 ArrayList<String> details = new ArrayList<>();
@@ -137,6 +141,7 @@ public class AdvancementInfo implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
+        Configurator.setLevel(LOGGER.getName(), Level.ALL);
         showAll = true;
         ConfigHolder<ModConfig> configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
         configHolder.registerSaveListener((holder, modConfig) -> {
@@ -144,5 +149,6 @@ public class AdvancementInfo implements ClientModInitializer
             return ActionResult.PASS;
         });
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        LOGGER.info("AdvancementInfo initialized");
     }
 }
