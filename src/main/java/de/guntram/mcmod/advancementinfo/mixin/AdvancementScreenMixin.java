@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 /**
  *
@@ -44,7 +43,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     private int currentInfoWidth = config.infoWidth.calculate(width);
     private TextFieldWidget search;
     @Shadow @Final private ClientAdvancementManager advancementHandler;
-    @Shadow abstract AdvancementTab getTab(Advancement advancement);
+    @Shadow protected abstract AdvancementTab getTab(Advancement advancement);
     
     @ModifyConstant(method="render", constant=@Constant(intValue = 252), require=1)
     private int getRenderLeft(int orig) { return width - config.marginX*2; }
@@ -71,7 +70,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
 
 
     @Inject(method="init", at=@At("RETURN"))
-    private void initSeachField(CallbackInfo ci) {
+    private void initSearchField(CallbackInfo ci) {
         currentInfoWidth = config.infoWidth.calculate(width);
         this.search = new TextFieldWidget(textRenderer, width-config.marginX-currentInfoWidth+9, config.marginY+18, currentInfoWidth-18, 17, new LiteralText(""));
     }
@@ -140,6 +139,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         drawTexture(stack, width-config.marginX - infoWl, bottomQuadY, screenW-infoWl, halfH, infoWl, halfH);
 
         // draw info borders
+        // Note: If the info box is too wide there would be missing top & bottom borders
         iterate(halfH+config.marginY, bottomQuadY, 100, (pos, len) -> {
             drawTexture(stack, width-config.marginX - iw, pos,0, 25, iw/2, len); // left
             drawTexture(stack, width-config.marginX - iw/2, pos, screenW-iw/2, 25, iw/2, len); // right
