@@ -38,7 +38,7 @@ public class AdvancementInfo implements ClientModInitializer
     static final Logger LOGGER = LogManager.getLogger();
 
     static public AdvancementWidget mouseOver, mouseClicked;
-    static public List<AdvancementStep>cachedClickList;
+    static public List<AdvancementStep> cachedClickList;
     static public int cachedClickListLineCount;
     public static boolean showAll;
     public static ModConfig config;
