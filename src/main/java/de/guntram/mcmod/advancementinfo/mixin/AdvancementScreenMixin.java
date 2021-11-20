@@ -241,7 +241,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     }
 
     private void renderCriteria(MatrixStack stack, AdvancementWidget widget) {
-        int y = config.marginY + 20 + 25;
+        int y = search.y + search.getHeight() + 4;
         int skip;
         List<AdvancementStep> list;
         if (widget == AdvancementInfo.mouseClicked) {
