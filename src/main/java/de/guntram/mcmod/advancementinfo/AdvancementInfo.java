@@ -10,7 +10,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.criterion.CriterionConditions;
@@ -20,20 +25,23 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.util.ActionResult;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class AdvancementInfo implements ClientModInitializer
 {
-    static final String MODID="advancementinfo";
-    static final String VERSION="@VERSION@";
-    
-    static final public int AI_spaceX = 30;
-    static final public int AI_spaceY = 30;
-    static final public int AI_infoWidth = 120;
-    
+    static final String MODID = "advancementinfo";
+    static final String VERSION = "@VERSION@";
+    static final Logger LOGGER = LogManager.getLogger();
+
     static public AdvancementWidget mouseOver, mouseClicked;
     static public List<AdvancementStep> cachedClickList;
     static public int cachedClickListLineCount;
     public static boolean showAll;
+    public static ModConfig config;
 
     public static List<AdvancementStep> getSteps(AdvancementWidgetAccessor widget) {
         List<AdvancementStep> result = new ArrayList<>();
@@ -45,7 +53,7 @@ public class AdvancementInfo implements ClientModInitializer
     private static void addStep(List<AdvancementStep> result, AdvancementProgress progress, Iterable<String> criteria, boolean obtained) {
         final String[] prefixes = new String[] { "item.minecraft", "block.minecraft", "entity.minecraft", "container", "effect.minecraft", "biome.minecraft" };
         // criteria is actually a List<> .. but play nice
-        ArrayList<String> sorted=new ArrayList<>();
+        ArrayList<String> sorted = new ArrayList<>();
         for (String s:criteria) {
             sorted.add(s);
         }
@@ -100,22 +108,24 @@ public class AdvancementInfo implements ClientModInitializer
         
         text = text.toLowerCase();
         for (Advancement adv: all) {
-            System.out.println("handling "+adv.getId().toString());
+            if(adv.getId().getPath().startsWith("recipes/")) {
+                continue;
+            }
             if (adv.getDisplay() == null) {
-                System.out.println("has no display");
+                LOGGER.debug("! {} Has no display", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getTitle() == null) {
-                System.out.println("has no title");
+                LOGGER.debug("! {} Has no title", adv.getId());
                 continue;
             }
             if (adv.getDisplay().getDescription() == null) {
-                System.out.println("has no description");
+                LOGGER.debug("! {} Has no description", adv.getId());
                 continue;
             }
             String title = adv.getDisplay().getTitle().getString();
             String desc  = adv.getDisplay().getDescription().getString();
-            System.out.println(title+": "+desc);
+            LOGGER.debug("- {} {}: {} ", adv.getId(), title, desc);
             if (title.toLowerCase().contains(text)
             ||  desc.toLowerCase().contains(text)) {
                 ArrayList<String> details = new ArrayList<>();
@@ -133,8 +143,20 @@ public class AdvancementInfo implements ClientModInitializer
     }
 
     @Override
-    public void onInitializeClient()
-    {
+    public void onInitializeClient() {
+        Configurator.setLevel(LOGGER.getName(), Level.ALL);
         showAll = false;
+        if (FabricLoader.getInstance().isModLoaded("cloth-config2")) {
+            ConfigHolder<ModConfig> configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+            configHolder.registerSaveListener((holder, modConfig) -> {
+                modConfig.validate();
+                return ActionResult.PASS;
+            });
+            config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        } else {
+            config = new ModConfig();
+        }
+
+        LOGGER.info("AdvancementInfo initialized");
     }
 }
