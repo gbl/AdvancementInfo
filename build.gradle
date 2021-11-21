@@ -19,11 +19,11 @@ repositories {
     }
 }
 
-sourceCompatibility = 16
-targetCompatibility = 16
+sourceCompatibility = 17
+targetCompatibility = 17
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-1.18-pre1.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-1.18-pre5.properties").newReader())
 
 archivesBaseName = "advancementinfo"
 ext.projectVersion = "1.2.2"

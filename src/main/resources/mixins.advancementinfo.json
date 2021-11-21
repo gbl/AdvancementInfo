@@ -5,7 +5,10 @@
     "minVersion": "0.6",
     "client": [
         "AdvancementScreenMixin", "AdvancementTabMixin", "AdvancementWidgetMixin",
-        "AdvancementProgressMixin", "AdvancementDisplayMixin", "AdvancementTabTypeMixin"
+        "AdvancementProgressMixin", "AdvancementDisplayMixin"
+    ],
+    "client-disabled" : [
+        "AdvancementTabTypeMixin"
     ],
     "injectors": {
         "defaultRequire": 1

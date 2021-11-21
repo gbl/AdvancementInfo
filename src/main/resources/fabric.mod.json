@@ -21,8 +21,7 @@
         "cloth-config2": ">=5.0.0"
     },
     "recommends": {
-        "modmenu" : ">=2.0.0",
-        "modupdater": ">=1.1.7"
+        "modmenu" : ">=2.0.0"
     },
     "name": "AdvancementInfo",
     "description": "Make it easier to see which advancements you have and what's missing.",
