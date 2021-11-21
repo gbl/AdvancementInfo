@@ -6,8 +6,7 @@
 package de.guntram.mcmod.advancementinfo.mixin;
 
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
-import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceX;
-import static de.guntram.mcmod.advancementinfo.AdvancementInfo.AI_spaceY;
+import static de.guntram.mcmod.advancementinfo.AdvancementInfo.config;
 import de.guntram.mcmod.advancementinfo.AdvancementStep;
 import de.guntram.mcmod.advancementinfo.IteratorReceiver;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementScreenAccessor;
@@ -27,10 +26,7 @@ import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -44,40 +40,39 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     public AdvancementScreenMixin() { super(null); }
     
     private int scrollPos;
+    private int currentInfoWidth = config.infoWidth.calculate(width);
     private TextFieldWidget search;
     @Shadow @Final private ClientAdvancementManager advancementHandler;
-    @Shadow abstract AdvancementTab getTab(Advancement advancement);
+    @Shadow protected abstract AdvancementTab getTab(Advancement advancement);
     
     @ModifyConstant(method="render", constant=@Constant(intValue = 252), require=1)
-    private int getRenderLeft(int orig) { return width - AI_spaceX*2; }
+    private int getRenderLeft(int orig) { return width - config.marginX*2; }
     
     @ModifyConstant(method="render", constant=@Constant(intValue = 140), require=1)
-    private int getRenderTop(int orig) { return height - AI_spaceY*2; }
+    private int getRenderTop(int orig) { return height - config.marginY*2; }
 
     @ModifyConstant(method="mouseClicked", constant=@Constant(intValue = 252), require=1)
-    private int getMouseLeft(int orig) { return width - AI_spaceX*2; }
+    private int getMouseLeft(int orig) { return width - config.marginX*2; }
     
     @ModifyConstant(method="mouseClicked", constant=@Constant(intValue = 140), require=1)
-    private int getMouseTop(int orig) { return height - AI_spaceY*2; }
+    private int getMouseTop(int orig) { return height - config.marginY*2; }
 
     @ModifyConstant(method="drawAdvancementTree", constant=@Constant(intValue = 234), require = 1)
-    private int getAdvTreeXSize(int orig) { return width - AI_spaceX*2 - 2*9 - AdvancementInfo.AI_infoWidth; }
+    private int getAdvTreeXSize(int orig) { return width - config.marginX*2 - 2*9 - currentInfoWidth; }
 
     @ModifyConstant(method="drawAdvancementTree", constant=@Constant(intValue = 113), require = 1)
-    private int getAdvTreeYSize(int orig) { return height - AI_spaceY*2 - 3*9; }
+    private int getAdvTreeYSize(int orig) { return height - config.marginY*2 - 3*9; }
 
-    /* Make it so that drawWidgets only draws the left top corner ... */
-    @ModifyConstant(method="drawWidgets", constant=@Constant(intValue = 252), require=1)
-    private int getWidgetsLeft(int orig) // { return width - AI_spaceX*2; }
-    { return 126; }
-    
-    @ModifyConstant(method="drawWidgets", constant=@Constant(intValue = 140), require=1)
-    private int getWidgetsTop(int orig) // { return height - AI_spaceY*2; }
-    { return 70; }
-    
+    @Redirect(method = "drawWidgets", at=@At(value = "INVOKE", target = "net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
+    public void disableDefaultDraw(AdvancementsScreen advancementsScreen, MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
+        // do nothing
+    }
+
+
     @Inject(method="init", at=@At("RETURN"))
-    private void initSeachField(CallbackInfo ci) {
-        this.search = new TextFieldWidget(textRenderer, width-AI_spaceX-AdvancementInfo.AI_infoWidth+10, AI_spaceY+20, AdvancementInfo.AI_infoWidth-20, 18, new LiteralText(""));
+    private void initSearchField(CallbackInfo ci) {
+        currentInfoWidth = config.infoWidth.calculate(width);
+        this.search = new TextFieldWidget(textRenderer, width-config.marginX-currentInfoWidth+9, config.marginY+18, currentInfoWidth-18, 17, new LiteralText(""));
     }
 
     
@@ -85,50 +80,94 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
             at=@At(value="INVOKE",
                     target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawWidgets(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void renderRightFrameBackground(MatrixStack stack, int x, int y, float delta, CallbackInfo ci) {
+        if(currentInfoWidth == 0) return;
         fill(stack, 
-                width-AI_spaceX-AdvancementInfo.AI_infoWidth+4, AI_spaceY+4, 
-                width-AI_spaceX-4, height-AI_spaceY-4, 0xffc0c0c0);
+                width-config.marginX-currentInfoWidth+4, config.marginY+4,
+                width-config.marginX-4, height-config.marginY-4, 0xffc0c0c0);
     }
     
     @Inject(method="drawWidgets",
             at=@At(value="INVOKE", 
                     target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
-    public void renderFrames(MatrixStack stack, int x, int y, CallbackInfo ci)
-    {
-        int iw = AdvancementInfo.AI_infoWidth;
+    public void renderFrames(MatrixStack stack, int x, int y, CallbackInfo ci) {
+        int iw = currentInfoWidth;
 
-        drawTexture(stack, width-AI_spaceX-126 - iw,                   y, 127,  0, 126, 70);
-        drawTexture(stack,                   x,                                height-AI_spaceY-70,   0, 71, 126, 70);
-        drawTexture(stack, width-AI_spaceX-126 - iw, height-AI_spaceY-70, 127, 71, 126, 70);
-        
-        iterate(126, width-AI_spaceX-126 - iw, 200, (pos, len) -> drawTexture(stack, pos, y, 15, 0, len, 70));
-        iterate(126, width-AI_spaceX-126 - iw, 200, (pos, len) -> drawTexture(stack, pos, height-AI_spaceY-70, 15, 71, len, 70));
-        iterate(70, height-AI_spaceY-70, 100, (pos, len) -> drawTexture(stack, x, pos, 0, 25, 70, len));
-        iterate(70, height-AI_spaceY-70, 100, (pos, len) -> drawTexture(stack, width-AI_spaceX-126 - iw, pos, 127, 25, 126, len));
+        int screenW = 252;
+        int screenH = 140;
+        // actual size that will be available for the box
+        int actualW = width - config.marginX - iw - x;
+        int actualH = width - config.marginY - y;
+        int halfW = screenW/2;
+        int halfH = screenH/2;
+        // When the screen is less than the default size the corners overlap
+        int clipXh = (int) (Math.max(0, screenW-actualW)/2.+0.5);
+        int clipXl = (int) (Math.max(0, screenW-actualW)/2.);
+        int clipYh = (int) (Math.max(0, screenH-actualH)/2.+0.5);
+        int clipYl = (int) (Math.max(0, screenH-actualH)/2.);
 
+        // The base screen has a resolution of 252x140, divided into 4 quadrants this gives:
+        // 1 │ 2       x    y        x    y
+        // ──┼──    1: 0    0     2: 126  0
+        // 3 │ 4    3: 0    70    4: 126  70
 
-        drawTexture(stack, width-AI_spaceX - iw  ,                   y,   0     ,  0, iw/2,   70);
-        drawTexture(stack, width-AI_spaceX - iw/2,                   y, 252-iw/2,  0, iw/2+1, 70);
-        drawTexture(stack, width-AI_spaceX - iw  , height-AI_spaceY-70,   0     , 71, iw/2,   70);
-        drawTexture(stack, width-AI_spaceX - iw/2, height-AI_spaceY-70, 252-iw/2, 71, iw/2+1, 70);
-        iterate(70, height-AI_spaceY-70, 100, (pos, len) -> drawTexture(stack, width-AI_spaceX - iw, pos,          0, 25, iw/2, len));
-        iterate(70, height-AI_spaceY-70, 100, (pos, len) -> drawTexture(stack, width-AI_spaceX - iw/2, pos, 252-iw/2, 25, iw/2, len));
+        int rightQuadX = width - config.marginX - halfW - iw + clipXh;
+        int bottomQuadY = height - config.marginY - halfH + clipYh;
+
+        drawTexture(stack, x, y, 0, 0, halfW-clipXl, halfH-clipYl); // top left
+        drawTexture(stack, rightQuadX, y, halfW+clipXh, 0, halfW-clipXh, halfH-clipYl); // top right
+        drawTexture(stack, x, bottomQuadY, 0, halfH+clipYh, halfW-clipXl, halfH-clipYh); // bottom left
+        drawTexture(stack, rightQuadX, bottomQuadY, halfW+clipXh, halfH+clipYh, halfW-clipXh, halfH-clipYh); // bottom right
+
+        // draw borders
+        iterate(x+halfW-clipXl, rightQuadX, 200, (pos, len) -> {
+            drawTexture(stack, pos, y, 15, 0, len, halfH); // top
+            drawTexture(stack, pos, bottomQuadY, 15, halfH+clipYh, len, halfH-clipYh); // bottom
+        });
+        iterate(y+halfH-clipYl, bottomQuadY, 100, (pos, len) -> {
+            drawTexture(stack, x, pos, 0, 25, halfW, len); // left
+            drawTexture(stack, rightQuadX, pos, halfW+clipXh, 25, halfW-clipXh, len); // right
+        });
+
+        if(currentInfoWidth == 0) return;
+
+        // draw info corners
+        int infoWl = (int) (iw/2.);
+        int infoWh = (int) (iw/2.+0.5);
+        drawTexture(stack, width-config.marginX - iw    , y,0, 0, infoWh, halfH); //
+        drawTexture(stack, width-config.marginX - infoWl, y, screenW-infoWl, 0, infoWl, halfH);
+        drawTexture(stack, width-config.marginX - iw    , bottomQuadY, 0, halfH, infoWh, halfH);
+        drawTexture(stack, width-config.marginX - infoWl, bottomQuadY, screenW-infoWl, halfH, infoWl, halfH);
+
+        // draw info borders
+        // Note: If the info box is too wide there would be missing top & bottom borders
+        iterate(halfH+config.marginY, bottomQuadY, 100, (pos, len) -> {
+            drawTexture(stack, width-config.marginX - iw, pos,0, 25, iw/2, len); // left
+            drawTexture(stack, width-config.marginX - iw/2, pos, screenW-iw/2, 25, iw/2, len); // right
+        });
     }
 
     private void iterate(int start, int end, int maxstep, IteratorReceiver func) {
+        if(start >= end) return;
         int size;
         for (int i=start; i<end; i+=maxstep) {
             size=maxstep;
             if (i+size > end) {
                 size = end - i;
+                if(size <= 0) return;
             }
             func.accept(i, size);
         }
     }
-    
+
+    @Inject(method="drawWidgets", at=@At(value = "HEAD"))
+    public void calculateLayout(MatrixStack matrices, int x, int y, CallbackInfo ci) {
+        currentInfoWidth = config.infoWidth.calculate(width);
+    }
+
     @Inject(method="drawWidgets", at=@At("RETURN"))
     public void renderRightFrameTitle(MatrixStack stack, int x, int y, CallbackInfo ci) {
-        textRenderer.draw(stack, I18n.translate("advancementinfo.infopane"), width-AI_spaceX-AdvancementInfo.AI_infoWidth+8, y+6, 4210752);
+        if(currentInfoWidth == 0) return;
+        textRenderer.draw(stack, I18n.translate("advancementinfo.infopane"), width-config.marginX-currentInfoWidth+8, y+6, 4210752);
         search.renderButton(stack, x, y, 0);
 
         if (AdvancementInfo.mouseClicked != null) {
@@ -139,12 +178,12 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     }
     
     @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
-    public void rememberClickedWidget(double x, double y, int button, CallbackInfoReturnable cir) {
+    public void rememberClickedWidget(double x, double y, int button, CallbackInfoReturnable<Boolean> cir) {
         if (search.mouseClicked(x, y, button)) {
             cir.setReturnValue(true);
             cir.cancel();
         }
-        if (x >= width - AI_spaceX - AdvancementInfo.AI_infoWidth) {
+        if (x >= width - config.marginX - currentInfoWidth) {
             // later: handle click on search results here
             return;
         }
@@ -170,15 +209,15 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         if (amount > 0 && scrollPos > 0) {
             scrollPos--;
         } else if (amount < 0 && AdvancementInfo.cachedClickList != null 
-                && scrollPos < AdvancementInfo.cachedClickListLineCount - ((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1)) {
+                && scrollPos < AdvancementInfo.cachedClickListLineCount - ((height-2*config.marginY-45)/textRenderer.fontHeight - 1)) {
             scrollPos++;
         }
-        // System.out.println("scrollpos is now "+scrollPos+", needed lines "+AdvancementInfo.cachedClickListLineCount+", shown "+((height-2*AI_spaceY-45)/textRenderer.fontHeight - 1));
+        // System.out.println("scrollpos is now "+scrollPos+", needed lines "+AdvancementInfo.cachedClickListLineCount+", shown "+((height-2*config.marginY-45)/textRenderer.fontHeight - 1));
         return false;
     }
 
     @Inject(method="keyPressed", at=@At("HEAD"), cancellable = true)
-    public void redirectKeysToSearch(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable cir) {
+    public void redirectKeysToSearch(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (search.isActive()) {
             if (keyCode == GLFW.GLFW_KEY_ENTER) {
                 AdvancementInfo.setMatchingFrom((AdvancementsScreen)(Object)this, search.getText());
@@ -202,7 +241,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     }
 
     private void renderCriteria(MatrixStack stack, AdvancementWidget widget) {
-        int y = AI_spaceY + 20 + 25;
+        int y = search.y + search.getHeight() + 4;
         int skip;
         List<AdvancementStep> list;
         if (widget == AdvancementInfo.mouseClicked) {
@@ -218,11 +257,11 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         for (AdvancementStep entry: list) {
             if (skip-- <= 0) {
                 textRenderer.draw(stack, 
-                        textRenderer.trimToWidth(entry.getName(), AdvancementInfo.AI_infoWidth-24),
-                        width-AI_spaceX-AdvancementInfo.AI_infoWidth+12, y, 
-                        entry.getObtained() ? 0x00ff00 : 0xff0000);
+                        textRenderer.trimToWidth(entry.getName(), currentInfoWidth-24),
+                        width-config.marginX-currentInfoWidth+12, y,
+                        entry.getObtained() ? AdvancementInfo.config.colorHave : AdvancementInfo.config.colorHaveNot);
                 y+=textRenderer.fontHeight;
-                if (y > height - AI_spaceY - textRenderer.fontHeight*2) {
+                if (y > height - config.marginY - textRenderer.fontHeight*2) {
                     return;
                 }
             }
@@ -231,11 +270,11 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
                 for (String detail: entry.getDetails()) {
                     if (skip-- <= 0) {
                         textRenderer.draw(stack, 
-                                textRenderer.trimToWidth(detail, AdvancementInfo.AI_infoWidth-34),
-                                width-AI_spaceX-AdvancementInfo.AI_infoWidth+22, y, 
+                                textRenderer.trimToWidth(detail, currentInfoWidth-34),
+                                width-config.marginX-currentInfoWidth+22, y,
                                 0x000000);
                         y+=textRenderer.fontHeight;
-                        if (y > height - AI_spaceY - textRenderer.fontHeight*2) {
+                        if (y > height - config.marginY - textRenderer.fontHeight*2) {
                             return;
                         }
                     }
