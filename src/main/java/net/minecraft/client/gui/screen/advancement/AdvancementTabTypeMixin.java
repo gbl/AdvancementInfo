@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.guntram.mcmod.advancementinfo.mixin;
+package net.minecraft.client.gui.screen.advancement;
 
 
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.advancement.AdvancementTabType;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 
 @SuppressWarnings("public-target")
-@Mixin(targets = "net.minecraft.client.gui.screen.advancement.AdvancementTabType")
+@Mixin(AdvancementTabType.class)
 public class AdvancementTabTypeMixin {
     @Dynamic
     @Inject(method="getTabX", at=@At("HEAD"), cancellable = true)
