@@ -7,9 +7,6 @@
         "AdvancementScreenMixin", "AdvancementTabMixin", "AdvancementWidgetMixin",
         "AdvancementProgressMixin", "AdvancementDisplayMixin"
     ],
-    "client-disabled" : [
-        "AdvancementTabTypeMixin"
-    ],
     "injectors": {
         "defaultRequire": 1
     }
