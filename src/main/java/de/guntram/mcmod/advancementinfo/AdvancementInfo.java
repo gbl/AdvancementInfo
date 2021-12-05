@@ -131,6 +131,10 @@ public class AdvancementInfo implements ClientModInitializer
                 ArrayList<String> details = new ArrayList<>();
                 details.add(desc);
                 AdvancementTab tab = ((AdvancementScreenAccessor)screen).myGetTab(adv);
+                if (tab == null) {
+                    LOGGER.info("no tab found for advancement {} title {} description {}", adv.getId(), title, desc);
+                    continue;
+                }
                 details.add(tab.getTitle().getString());
                 boolean done = ((AdvancementWidgetAccessor)(screen.getAdvancementWidget(adv))).getProgress().isDone();
                 result.add(new AdvancementStep(title, done, details));
