@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Информация",
+    "text.autoconfig.advancementinfo.title": "Настройки AdvancementInfo",
+    "text.autoconfig.advancementinfo.option.colorHave": "Выполненное требование: цвет",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Невыполненное требование: цвет",
+    "text.autoconfig.advancementinfo.option.marginX": "Отступ по X",
+    "text.autoconfig.advancementinfo.option.marginY": "Отступ по Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Ширина поля с информацией",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Минимум",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Максимум",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Процент от площади меню",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Включено",
+
+    "modmenu.summaryTranslation.advancementinfo": "Упрощает изучение и выполнение достижений, вы всегда будете знать, что упустили.",
+    "modmenu.descriptionTranslation.advancementinfo": "Упрощает изучение и выполнение достижений, вы всегда будете знать, что упустили."
+}
