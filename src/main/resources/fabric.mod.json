@@ -13,10 +13,8 @@
             "url": "https://raw.githubusercontent.com/gbl/ModVersionInfo/master/AdvancementInfo.json"
         }
     },
-    "mixins": [
-        "mixins.advancementtabtype.json",
-        "mixins.advancementinfo.json"
-    ],
+    "mixins": [ "mixins.advancementinfo.json" ],
+    "accessWidener": "advancementinfo.accesswidener",
     "depends": {
         "fabric": "*",
         "cloth-config2": ">=5.0.0"
