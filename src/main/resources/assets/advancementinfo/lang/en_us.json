@@ -9,5 +9,8 @@
     "text.autoconfig.advancementinfo.option.infoWidth.min": "Min",
     "text.autoconfig.advancementinfo.option.infoWidth.max": "Max",
     "text.autoconfig.advancementinfo.option.infoWidth.percent": "Percent",
-    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Enabled"
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Enabled",
+
+    "modmenu.summaryTranslation.advancementinfo": "Make it easier to see which advancements you have and what's missing.",
+    "modmenu.descriptionTranslation.advancementinfo": "Make it easier to see which advancements you have and what's missing."
 }
