@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "資訊",
+    "text.autoconfig.advancementinfo.title": "AdvancementInfo 設定",
+    "text.autoconfig.advancementinfo.option.colorHave": "完成的進度顏色",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "未完成的進度顏色",
+    "text.autoconfig.advancementinfo.option.marginX": "邊距 X",
+    "text.autoconfig.advancementinfo.option.marginY": "邊距 Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "信息寬度",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "最小值",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "最大值",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "百分之",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "啟用",
+
+    "modmenu.summaryTranslation.advancementinfo": "可以更輕鬆地查看您擁有哪些進度以及缺少哪些進度。 ",
+    "modmenu.descriptionTranslation.advancementinfo": "可以更輕鬆地查看您擁有哪些進度以及缺少哪些進度。"
+}
