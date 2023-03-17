@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Інформація",
+    "text.autoconfig.advancementinfo.title": "Параметри AdvancementInfo",
+    "text.autoconfig.advancementinfo.option.colorHave": "Колір виконаної вимоги",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Колір невиконаної вимоги",
+    "text.autoconfig.advancementinfo.option.marginX": "Відступ X",
+    "text.autoconfig.advancementinfo.option.marginY": "Відступ Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Ширина поля інформації",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Мін.",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Макс.",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Відсотк.",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Увімк.",
+
+    "modmenu.summaryTranslation.advancementinfo": "Спрощує перегляд виконаних та пропущених досягнень.",
+    "modmenu.descriptionTranslation.advancementinfo": "Спрощує перегляд виконаних та пропущених досягнень."
+}
