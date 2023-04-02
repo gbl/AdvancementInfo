@@ -47,7 +47,7 @@ dependencies {
     mappings   "net.fabricmc:yarn:${Versions['yarn_mappings']}:v2"
     modImplementation "net.fabricmc:fabric-loader:${Versions['loader_version']}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
-    modImplementation include ("me.shedaniel.cloth:cloth-config-fabric:${Versions['cloth_config_version']}") {
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${Versions['cloth_config_version']}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
     modCompileOnly "com.terraformersmc:modmenu:${Versions['modmenu_version']}"
