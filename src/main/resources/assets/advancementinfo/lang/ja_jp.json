@@ -1,0 +1,16 @@
+{
+	"advancementinfo.infopane": "詳細",
+	"text.autoconfig.advancementinfo.title": "AdvancementInfo 設定",
+	"text.autoconfig.advancementinfo.option.colorHave": "達成した条件の色",
+	"text.autoconfig.advancementinfo.option.colorHaveNot": "未達成の条件の色",
+	"text.autoconfig.advancementinfo.option.marginX": "X軸の余白",
+	"text.autoconfig.advancementinfo.option.marginY": "Y軸の余白",
+	"text.autoconfig.advancementinfo.option.infoWidth": "詳細表示の幅",
+	"text.autoconfig.advancementinfo.option.infoWidth.min": "最小値",
+	"text.autoconfig.advancementinfo.option.infoWidth.max": "最大値",
+	"text.autoconfig.advancementinfo.option.infoWidth.percent": "パーセント",
+	"text.autoconfig.advancementinfo.option.infoWidth.enabled": "有効",
+	
+	"modmenu.summaryTranslation.advancementinfo": "進捗画面を見やすくし、達成に必要な条件を確認できるようにします。",
+	"modmenu.descriptionTranslation.advancementinfo": "進捗画面を見やすくし、達成に必要な条件を確認できるようにします。"
+}
