@@ -64,7 +64,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     private int getAdvTreeYSize(int orig) { return height - config.marginY*2 - 3*9; }
 
     @Redirect(method = "drawWindow", at=@At(value = "INVOKE", target = "net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
-    public void disableDefaultDraw(AdvancementsScreen advancementsScreen, MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
+    public void disableDefaultDraw(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
         // do nothing
     }
 

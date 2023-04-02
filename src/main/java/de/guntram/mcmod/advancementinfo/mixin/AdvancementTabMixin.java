@@ -31,7 +31,7 @@ public class AdvancementTabMixin {
     private int currentInfoWidth;
 
     @Inject(method="render", at = @At("HEAD"))
-    private void updateLayout(MatrixStack matrices, CallbackInfo ci) {
+    private void updateLayout(MatrixStack matrices, int x, int y, CallbackInfo ci) {
         if(screen != null) {
             currentInfoWidth = config.infoWidth.calculate(screen.width);
         }
