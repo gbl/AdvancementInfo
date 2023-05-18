@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Мәгълүмат",
+    "text.autoconfig.advancementinfo.title": "AdvancementInfo көйләүләре",
+    "text.autoconfig.advancementinfo.option.colorHave": "Төгәлләнгән таләп төсе",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Төгәлләнмәгән таләп төсе",
+    "text.autoconfig.advancementinfo.option.marginX": "X кыры",
+    "text.autoconfig.advancementinfo.option.marginY": "Y кыры",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Мәгълүмат киңлеге",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Мин",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Макс",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Процент",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Кушык",
+
+    "modmenu.summaryTranslation.advancementinfo": "Казанышларның өйрәнүне һәм үтәүне гадиләштерә, үтәлешнең күзәтүне өсти.",
+    "modmenu.descriptionTranslation.advancementinfo": "Казанышларның өйрәнүне һәм үтәүне гадиләштерә, үтәлешнең күзәтүне өсти."
+}
