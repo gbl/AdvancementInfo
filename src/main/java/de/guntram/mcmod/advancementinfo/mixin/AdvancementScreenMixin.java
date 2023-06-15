@@ -13,6 +13,7 @@ import de.guntram.mcmod.advancementinfo.accessors.AdvancementScreenAccessor;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import java.util.List;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
@@ -22,6 +23,7 @@ import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,7 +46,9 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     private TextFieldWidget search;
     @Shadow @Final private ClientAdvancementManager advancementHandler;
     @Shadow protected abstract AdvancementTab getTab(Advancement advancement);
-    
+
+    @Shadow @Final private static Identifier WINDOW_TEXTURE;
+
     @ModifyConstant(method="render", constant=@Constant(intValue = 252), require=1)
     private int getRenderLeft(int orig) { return width - config.marginX*2; }
     
@@ -63,8 +67,8 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     @ModifyConstant(method="drawAdvancementTree", constant=@Constant(intValue = 113), require = 1)
     private int getAdvTreeYSize(int orig) { return height - config.marginY*2 - 3*9; }
 
-    @Redirect(method = "drawWindow", at=@At(value = "INVOKE", target = "net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
-    public void disableDefaultDraw(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
+    @Redirect(method = "drawWindow", at=@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
+    public void disableDefaultDraw(DrawContext instance, Identifier texture, int x, int y, int u, int v, int width, int height) {
         // do nothing
     }
 
@@ -76,18 +80,19 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     
     @Inject(method="render",
             at=@At(value="INVOKE",
-                    target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawWindow(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
-    public void renderRightFrameBackground(MatrixStack stack, int x, int y, float delta, CallbackInfo ci) {
+                    target="Lnet/minecraft/client/gui/screen/advancement/AdvancementsScreen;drawWindow(Lnet/minecraft/client/gui/DrawContext;II)V"))
+    public void renderRightFrameBackground(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if(currentInfoWidth == 0) return;
-        fill(stack, 
+        context
+        .fill(
                 width-config.marginX-currentInfoWidth+4, config.marginY+4,
                 width-config.marginX-4, height-config.marginY-4, 0xffc0c0c0);
     }
     
     @Inject(method="drawWindow",
             at=@At(value="INVOKE", 
-                    target="net/minecraft/client/gui/screen/advancement/AdvancementsScreen.drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
-    public void renderFrames(MatrixStack stack, int x, int y, CallbackInfo ci) {
+                    target="Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
+    public void renderFrames(DrawContext context, int x, int y, CallbackInfo ci) {
         int iw = currentInfoWidth;
 
         int screenW = 252;
@@ -111,19 +116,19 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         int rightQuadX = width - config.marginX - halfW - iw + clipXh;
         int bottomQuadY = height - config.marginY - halfH + clipYh;
 
-        drawTexture(stack, x, y, 0, 0, halfW-clipXl, halfH-clipYl); // top left
-        drawTexture(stack, rightQuadX, y, halfW+clipXh, 0, halfW-clipXh, halfH-clipYl); // top right
-        drawTexture(stack, x, bottomQuadY, 0, halfH+clipYh, halfW-clipXl, halfH-clipYh); // bottom left
-        drawTexture(stack, rightQuadX, bottomQuadY, halfW+clipXh, halfH+clipYh, halfW-clipXh, halfH-clipYh); // bottom right
+        context.drawTexture(WINDOW_TEXTURE, x, y, 0, 0, halfW-clipXl, halfH-clipYl);
+        context.drawTexture(WINDOW_TEXTURE, rightQuadX, y, halfW+clipXh, 0, halfW-clipXh, halfH-clipYl); // top right
+        context.drawTexture(WINDOW_TEXTURE, x, bottomQuadY, 0, halfH+clipYh, halfW-clipXl, halfH-clipYh); // bottom left
+        context.drawTexture(WINDOW_TEXTURE, rightQuadX, bottomQuadY, halfW+clipXh, halfH+clipYh, halfW-clipXh, halfH-clipYh); // bottom right
 
         // draw borders
         iterate(x+halfW-clipXl, rightQuadX, 200, (pos, len) -> {
-            drawTexture(stack, pos, y, 15, 0, len, halfH); // top
-            drawTexture(stack, pos, bottomQuadY, 15, halfH+clipYh, len, halfH-clipYh); // bottom
+            context.drawTexture(WINDOW_TEXTURE, pos, y, 15, 0, len, halfH); // top
+            context.drawTexture(WINDOW_TEXTURE, pos, bottomQuadY, 15, halfH+clipYh, len, halfH-clipYh); // bottom
         });
         iterate(y+halfH-clipYl, bottomQuadY, 100, (pos, len) -> {
-            drawTexture(stack, x, pos, 0, 25, halfW, len); // left
-            drawTexture(stack, rightQuadX, pos, halfW+clipXh, 25, halfW-clipXh, len); // right
+            context.drawTexture(WINDOW_TEXTURE, x, pos, 0, 25, halfW, len); // left
+            context.drawTexture(WINDOW_TEXTURE, rightQuadX, pos, halfW+clipXh, 25, halfW-clipXh, len); // right
         });
 
         if(currentInfoWidth == 0) return;
@@ -131,16 +136,16 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         // draw info corners
         int infoWl = (int) (iw/2.);
         int infoWh = (int) (iw/2.+0.5);
-        drawTexture(stack, width-config.marginX - iw    , y,0, 0, infoWh, halfH); //
-        drawTexture(stack, width-config.marginX - infoWl, y, screenW-infoWl, 0, infoWl, halfH);
-        drawTexture(stack, width-config.marginX - iw    , bottomQuadY, 0, halfH, infoWh, halfH);
-        drawTexture(stack, width-config.marginX - infoWl, bottomQuadY, screenW-infoWl, halfH, infoWl, halfH);
+        context.drawTexture(WINDOW_TEXTURE, width-config.marginX - iw    , y,0, 0, infoWh, halfH); //
+        context.drawTexture(WINDOW_TEXTURE, width-config.marginX - infoWl, y, screenW-infoWl, 0, infoWl, halfH);
+        context.drawTexture(WINDOW_TEXTURE, width-config.marginX - iw    , bottomQuadY, 0, halfH, infoWh, halfH);
+        context.drawTexture(WINDOW_TEXTURE, width-config.marginX - infoWl, bottomQuadY, screenW-infoWl, halfH, infoWl, halfH);
 
         // draw info borders
         // Note: If the info box is too wide there would be missing top & bottom borders
         iterate(halfH+config.marginY, bottomQuadY, 100, (pos, len) -> {
-            drawTexture(stack, width-config.marginX - iw, pos,0, 25, iw/2, len); // left
-            drawTexture(stack, width-config.marginX - iw/2, pos, screenW-iw/2, 25, iw/2, len); // right
+            context.drawTexture(WINDOW_TEXTURE, width-config.marginX - iw, pos,0, 25, iw/2, len); // left
+            context.drawTexture(WINDOW_TEXTURE, width-config.marginX - iw/2, pos, screenW-iw/2, 25, iw/2, len); // right
         });
     }
 
@@ -158,20 +163,20 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     }
     
     @Inject(method="drawWindow", at=@At("HEAD"))
-    public void calculateLayout(MatrixStack matrices, int x, int y, CallbackInfo ci) {
+    public void calculateLayout(DrawContext context, int x, int y, CallbackInfo ci) {
         currentInfoWidth = config.infoWidth.calculate(width);
     }
 
     @Inject(method="drawWindow", at=@At("RETURN"))
-    public void renderRightFrameTitle(MatrixStack stack, int x, int y, CallbackInfo ci) {
+    public void renderRightFrameTitle(DrawContext context, int x, int y, CallbackInfo ci) {
         if(currentInfoWidth == 0) return;
-        textRenderer.draw(stack, I18n.translate("advancementinfo.infopane"), width-config.marginX-currentInfoWidth+8, y+6, 4210752);
-        search.renderButton(stack, x, y, 0);
+        context.drawText(textRenderer, I18n.translate("advancementinfo.infopane"), width-config.marginX-currentInfoWidth+8, y+6, 4210752, false);
+        search.renderButton(context, x, y, 0);
 
         if (AdvancementInfo.mouseClicked != null) {
-            renderCriteria(stack, AdvancementInfo.mouseClicked);
+            renderCriteria(context, AdvancementInfo.mouseClicked);
         } else if (AdvancementInfo.mouseOver != null || AdvancementInfo.cachedClickList != null) {
-            renderCriteria(stack, AdvancementInfo.mouseOver);                    
+            renderCriteria(context, AdvancementInfo.mouseOver);
         }
     }
     
@@ -238,7 +243,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         return false;
     }
 
-    private void renderCriteria(MatrixStack stack, AdvancementWidget widget) {
+    private void renderCriteria(DrawContext context, AdvancementWidget widget) {
         int y = search.getY() + search.getHeight() + 4;
         int skip;
         List<AdvancementStep> list;
@@ -254,10 +259,11 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         }
         for (AdvancementStep entry: list) {
             if (skip-- <= 0) {
-                textRenderer.draw(stack, 
+                context.drawText(textRenderer,
                         textRenderer.trimToWidth(entry.getName(), currentInfoWidth-24),
                         width-config.marginX-currentInfoWidth+12, y,
-                        entry.getObtained() ? AdvancementInfo.config.colorHave : AdvancementInfo.config.colorHaveNot);
+                        entry.getObtained() ? AdvancementInfo.config.colorHave : AdvancementInfo.config.colorHaveNot,
+                        false);
                 y+=textRenderer.fontHeight;
                 if (y > height - config.marginY - textRenderer.fontHeight*2) {
                     return;
@@ -267,10 +273,10 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
             if (entry.getDetails() != null) {
                 for (String detail: entry.getDetails()) {
                     if (skip-- <= 0) {
-                        textRenderer.draw(stack, 
+                        context.drawText(textRenderer,
                                 textRenderer.trimToWidth(detail, currentInfoWidth-34),
                                 width-config.marginX-currentInfoWidth+22, y,
-                                0x000000);
+                                0x000000, false);
                         y+=textRenderer.fontHeight;
                         if (y > height - config.marginY - textRenderer.fontHeight*2) {
                             return;

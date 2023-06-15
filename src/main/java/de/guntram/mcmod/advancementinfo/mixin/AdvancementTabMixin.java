@@ -7,6 +7,8 @@ package de.guntram.mcmod.advancementinfo.mixin;
 
 import de.guntram.mcmod.advancementinfo.AdvancementInfo;
 import static de.guntram.mcmod.advancementinfo.AdvancementInfo.config;
+
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,7 +33,7 @@ public class AdvancementTabMixin {
     private int currentInfoWidth;
 
     @Inject(method="render", at = @At("HEAD"))
-    private void updateLayout(MatrixStack matrices, int x, int y, CallbackInfo ci) {
+    private void updateLayout(DrawContext context, int x, int y, CallbackInfo ci) {
         if(screen != null) {
             currentInfoWidth = config.infoWidth.calculate(screen.width);
         }
@@ -74,7 +76,7 @@ public class AdvancementTabMixin {
     private int getTooltipYSize(int orig) { return screen.height - config.marginY*2 - 3*9; }
     
     @Inject(method="drawWidgetTooltip", at=@At("HEAD"))
-    private void forgetMouseOver(MatrixStack stack, int i, int j, int y, int k, CallbackInfo ci) {
+    private void forgetMouseOver(DrawContext context, int mouseX, int mouseY, int x, int y, CallbackInfo ci) {
         AdvancementInfo.mouseOver = null;
     }
 }
