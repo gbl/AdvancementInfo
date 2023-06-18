@@ -183,8 +183,13 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
     public void rememberClickedWidget(double x, double y, int button, CallbackInfoReturnable<Boolean> cir) {
         if (search.mouseClicked(x, y, button)) {
+            search.setFocused(true);
             cir.setReturnValue(true);
             cir.cancel();
+        }
+        else
+        {
+            search.setFocused(false);
         }
         if (x >= width - config.marginX - currentInfoWidth) {
             // later: handle click on search results here
