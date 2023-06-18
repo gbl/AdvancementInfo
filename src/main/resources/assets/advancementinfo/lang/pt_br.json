@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Info.",
+    "text.autoconfig.advancementinfo.title": "Configurações do AdvancementInfo",
+    "text.autoconfig.advancementinfo.option.colorHave": "Cor de Requisitos Finalizados",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Cor de Requisitos A Fazer",
+    "text.autoconfig.advancementinfo.option.marginX": "Margem X",
+    "text.autoconfig.advancementinfo.option.marginY": "Margem Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Largura da Info.",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Min",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Máx",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Porcento",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Habilitado",
+
+    "modmenu.summaryTranslation.advancementinfo": "Facilita a visualização dos Progressos que você tem e os que ainda faltam.",
+    "modmenu.descriptionTranslation.advancementinfo": "Facilita a visualização dos Progressos que você tem e os que ainda faltam."
+}
