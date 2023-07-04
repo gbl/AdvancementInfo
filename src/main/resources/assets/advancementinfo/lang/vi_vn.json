@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Thông tin",
+    "text.autoconfig.advancementinfo.title": "Cài đặt AdvancementInfo",
+    "text.autoconfig.advancementinfo.option.colorHave": "Màu yêu cầu đã hoàn thành",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Màu yêu cầu chưa hoàn thành",
+    "text.autoconfig.advancementinfo.option.marginX": "Lề X",
+    "text.autoconfig.advancementinfo.option.marginY": "Lề Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Chiều rộng thông tin",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Tối thiểu",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Tối đa",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Phần trăm",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Đã bật",
+
+    "modmenu.summaryTranslation.advancementinfo": "Làm cho nó dễ dàng hơn để xem bạn có những thành tựu nào và những gì còn thiếu.",
+    "modmenu.descriptionTranslation.advancementinfo": "Làm cho nó dễ dàng hơn để xem bạn có những thành tựu nào và những gì còn thiếu."
+}
