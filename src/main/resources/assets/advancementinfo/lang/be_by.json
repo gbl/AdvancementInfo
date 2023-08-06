@@ -1,0 +1,16 @@
+{
+    "advancementinfo.infopane": "Інфармацыя",
+    "text.autoconfig.advancementinfo.title": "Налады AdvancementInfo",
+    "text.autoconfig.advancementinfo.option.colorHave": "Выкананае патрабаванне: колер",
+    "text.autoconfig.advancementinfo.option.colorHaveNot": "Невыкананае патрабаванне: колер",
+    "text.autoconfig.advancementinfo.option.marginX": "Водступ па X",
+    "text.autoconfig.advancementinfo.option.marginY": "Водступ па Y",
+    "text.autoconfig.advancementinfo.option.infoWidth": "Шырыня поля с інфармацыяй",
+    "text.autoconfig.advancementinfo.option.infoWidth.min": "Мінімум",
+    "text.autoconfig.advancementinfo.option.infoWidth.max": "Максімум",
+    "text.autoconfig.advancementinfo.option.infoWidth.percent": "Працэнт",
+    "text.autoconfig.advancementinfo.option.infoWidth.enabled": "Уключана",
+
+    "modmenu.summaryTranslation.advancementinfo": "Спрашчае вывучэнне і выкананне дасягненняў, вы заўсёды будзеце ведаць, што упусцілі.",
+    "modmenu.descriptionTranslation.advancementinfo": "Спрашчае вывучэнне і выкананне дасягненняў, вы заўсёды будзеце ведаць, што упусцілі."
+}
