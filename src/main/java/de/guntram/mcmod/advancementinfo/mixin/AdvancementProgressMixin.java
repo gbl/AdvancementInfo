@@ -19,13 +19,16 @@ public class AdvancementProgressMixin implements AdvancementProgressAccessor {
     
     private Map<String, AdvancementCriterion> savedCriteria;
     
+    /*
     @Inject(method="init", at=@At("HEAD"))
     public void saveCriteria(Map<String, AdvancementCriterion> criteria, String[][] requirements, CallbackInfo ci) {
         savedCriteria = criteria;
     }
-    
+    */
+
     @Override
     public AdvancementCriterion getCriterion(String name) {
-        return savedCriteria.get(name);
+        /* return savedCriteria.get(name); */
+        throw new IllegalStateException("Not supported in 1.20.4");
     }
 }

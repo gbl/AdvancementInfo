@@ -13,6 +13,7 @@ import de.guntram.mcmod.advancementinfo.accessors.AdvancementScreenAccessor;
 import de.guntram.mcmod.advancementinfo.accessors.AdvancementWidgetAccessor;
 import java.util.List;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
@@ -45,7 +46,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     private int currentInfoWidth = config.infoWidth.calculate(width);
     private TextFieldWidget search;
     @Shadow @Final private ClientAdvancementManager advancementHandler;
-    @Shadow protected abstract AdvancementTab getTab(Advancement advancement);
+    @Shadow protected abstract AdvancementTab getTab(PlacedAdvancement advancement);
 
     @Shadow @Final private static Identifier WINDOW_TEXTURE;
 
@@ -171,7 +172,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     public void renderRightFrameTitle(DrawContext context, int x, int y, CallbackInfo ci) {
         if(currentInfoWidth == 0) return;
         context.drawText(textRenderer, I18n.translate("advancementinfo.infopane"), width-config.marginX-currentInfoWidth+8, y+6, 4210752, false);
-        search.renderButton(context, x, y, 0);
+        search.renderWidget(context, x, y, 0);
 
         if (AdvancementInfo.mouseClicked != null) {
             renderCriteria(context, AdvancementInfo.mouseClicked);
@@ -205,16 +206,16 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
     }
     
     @Inject(method="onRootAdded", at=@At("HEAD"))
-    public void debugRootAdded(Advancement root, CallbackInfo ci) {
+    public void debugRootAdded(PlacedAdvancement root, CallbackInfo ci) {
         // System.out.println("root added to screen; display="+root.getDisplay()+", id="+root.getId().toString());
     }
     
     // @Inject(method="mouseScrolled", at=@At("HEAD"), cancellable = true)
     @Override
-    public boolean mouseScrolled(double X, double Y, double amount /*, CallbackInfoReturnable cir */) {
-        if (amount > 0 && scrollPos > 0) {
+    public boolean mouseScrolled(double X, double Y, double xAmount, double yAmount /*, CallbackInfoReturnable cir */) {
+        if (yAmount > 0 && scrollPos > 0) {
             scrollPos--;
-        } else if (amount < 0 && AdvancementInfo.cachedClickList != null 
+        } else if (yAmount < 0 && AdvancementInfo.cachedClickList != null
                 && scrollPos < AdvancementInfo.cachedClickListLineCount - ((height-2*config.marginY-45)/textRenderer.fontHeight - 1)) {
             scrollPos++;
         }
@@ -261,9 +262,12 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
             return;
         }
         for (AdvancementStep entry: list) {
+            if (entry.getName() == null) {
+                System.out.println("list entry has null name: "+ entry);
+            }
             if (skip-- <= 0) {
                 context.drawText(textRenderer,
-                        textRenderer.trimToWidth(entry.getName(), currentInfoWidth-24),
+                        textRenderer.trimToWidth(entry.getName() == null ? "???" : entry.getName(), currentInfoWidth-24),
                         width-config.marginX-currentInfoWidth+12, y,
                         entry.getObtained() ? AdvancementInfo.config.colorHave : AdvancementInfo.config.colorHaveNot,
                         false);
@@ -272,7 +276,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
                     return;
                 }
             }
-            
+
             if (entry.getDetails() != null) {
                 for (String detail: entry.getDetails()) {
                     if (skip-- <= 0) {
@@ -295,7 +299,7 @@ public abstract class AdvancementScreenMixin extends Screen implements Advanceme
         return advancementHandler;
     }
     
-    public AdvancementTab myGetTab(Advancement advancement) {
+    public AdvancementTab myGetTab(PlacedAdvancement advancement) {
         return getTab(advancement);
     }
 }
